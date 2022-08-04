@@ -44,18 +44,49 @@ class gridBoard():
         x1, y1 = self.getCellPoint(row+1, col+1)
         return x0, y0, x1, y1
 
-    def checkWin(self, row, col): #row and col are for last placed piece
-        if (row - 4)< 0:
-            minRow = 0
-        else:
-            minRow = row - 4
-        if (row + 4) > self.cells:
-            maxRow = self.cells
-        if (col - 4) < 0:
-            minCol = 0
-        if (col + 4) > self.cells:
-            minCol = self.cells
+    def checkConsecutive(self, L, color): 
+                                   # crow,ccol are center values
+        count = 0
+        for i in range(len(L)):
+            if L[i] == color:
+                count += 1
+            else:
+                count = 0
+            if count == self.winRow:
+                return True
 
+    def checkWin(self, row, col, color): #row and col are for last placed piece
+        winRow = 5
+        surrRange = winRow - 1
+        minRow = max((row - surrRange), 0)
+        maxRow = min((row + surrRange), self.cells - 1)
+        minCol = max((col - surrRange), 0)
+        maxCol = min((col + surrRange), self.cells - 1)
+
+        hList = board[row][minCol:maxCol+1]
+        vList = []
+        for i in range(minRow,maxRow+1):
+            vList.append(board[i][col])
+        d1List = []
+        d2List = []
+        #use largest min and smallest max so that u search inside the board
+
+        corner1 = min(row - minRow, col - minCol) #top left 
+        corner2 = min(col - minCol, maxRow - row) #top right
+        corner3 = min(maxRow - row, maxCol - col) #bottom right
+        corner4 = min(maxCol - col, row - minRow) #bottom left
+        for i in range(corner3 + corner1 + 1):
+            startRow = row - corner1
+            startCol = col - corner1
+            d1List.append(board[startRow + i][startCol + i])
+        for i2 in range(corner2 + corner4 + 1):
+            startRow = row - corner4
+            startCol = col + corner4
+            print(row, col, corner2, corner4, i2)
+            d2List.append(board[startRow + i2][startCol - i2])
+        for L in [hList, vList, d1List, d2List]:
+            if self.checkConsecutive(L, color):
+                return True
 
 
     # DRAW FUNCTIONS
@@ -117,10 +148,11 @@ class player():
     def placePiece(self, x, y):
         row, col = self.getCoords(x, y)
         if [row, col] == self.prevVisited:
-
             self.prevVisited = []
             self.changeBoard(row, col)
-            return True
+            print(f'plauer{row, col}')
+            return [row, col]
+        return None
 
     def isValidPiece(self, row, col):
         if row < self.cells and col < self.cells:
@@ -154,6 +186,7 @@ class ai(player):
         while not self.isValidPiece(row, col):
             row, col = self.chooseRowCol()
         self.changeBoard(row, col)
+        return row, col
     
     def changeBoard(self, row, col):
         board[row][col] = self.color
@@ -167,10 +200,10 @@ class message():
         self.isPlayerTurn = isPlayerTurn
         self.isPlayerBlack = isPlayerBlack
         self.textMessage = ""
-        self.updateMessage(self.isPlayerTurn)
+        self.updateMessageTurn(self.isPlayerTurn)
 
 
-    def updateMessage(self, isPlayerTurn):
+    def updateMessageTurn(self, isPlayerTurn):
         self.isPlayerTurn = isPlayerTurn
         if self.isPlayerTurn:
             self.textMessage = "Player:"
@@ -195,6 +228,7 @@ class gomokuGame():
         self.length = length
         self.margin = 20
         self.topMargin = 50
+        self.gameOver = False
         self.isPlayerBlack = bool(random.randrange(0,2))
         if self.isPlayerBlack:
             self.isPlayerTurn = True
@@ -209,30 +243,51 @@ class gomokuGame():
         self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack)
         self.aibot = ai(self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
 
+
     def nextPlayer(self):
         self.isPlayerTurn = not self.isPlayerTurn
-        self.message.updateMessage(self.isPlayerTurn)
-
+        self.message.updateMessageTurn(self.isPlayerTurn)
 
     def moving(self, x, y):
-        if self.isPlayerTurn:
-            self.player.hoveringPiece(x, y)
+        if not self.gameOver:
+            if self.isPlayerTurn:
+                self.player.hoveringPiece(x, y)
 
     def placePlayer(self, x, y):
-        if self.isPlayerTurn:
-            if not self.player.placePiece(x, y):
-                self.message.textMessage = "Invalid Placement"
-            else:
-                self.nextPlayer()
+        if not self.gameOver:
+            if self.isPlayerTurn:
+                move = self.player.placePiece(x, y) #row, col
+                if move == None:
+                    self.message.textMessage = "Invalid Placement"
+                else:
+                    row, col = move[0], move[1]
+                    if self.grid.checkWin(row, col, self.player.color):
+                        self.win(self.player)
+                        print('WINNN')
+                    else:
+                        self.nextPlayer()
 
     def placeAI(self):
-        if not self.isPlayerTurn:
-            self.aibot.placePiece()
-            self.nextPlayer()
+        if not self.gameOver:
+            if not self.isPlayerTurn:
+                row, col = self.aibot.placePiece()
+                if self.grid.checkWin(row, col, self.aibot.color):
+                    self.win(self.player)
+                    print('WINNN')
+                else:
+                    self.nextPlayer()
     
-    def win (self, winner):
-        pass
-
+    def win(self, winner):
+        self.gameOver = True
+        if winner == self.player:
+            self.message.textMessage = "Player "
+        elif winner == self.player:
+            self.message.textMessage = "AI "
+        if winner.color == 'w':
+            color = 'White'
+        elif winner.color == 'b':
+            color = 'Black'
+        self.message.textMessage += f"{color} Wins!!!"
 
 def appStarted(app):
     length = app.width
@@ -256,6 +311,7 @@ def timerFired(app):
 #################################################
 
 def redrawAll(app, canvas):
+    print(app.game.message.textMessage)
     app.game.message.drawMessage(canvas)
     app.game.grid.drawScreen(canvas)
 
