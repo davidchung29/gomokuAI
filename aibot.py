@@ -6,9 +6,9 @@ class ai(player):
     def __init__(self, board, length, margin, topMargin, cells, isBlack):
         super().__init__(board, length, margin, topMargin, cells, isBlack)
         if self.isBlack:
-            self.color = "w"
-        else:
             self.color = "b"
+        else:
+            self.color = "w"
 
     def updateBoard(self, board):
         self.board = board

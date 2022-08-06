@@ -1,3 +1,4 @@
+from cgi import test
 from sys import builtin_module_names
 from cmu_112_graphics import *
 import random, string, math, time
@@ -12,6 +13,7 @@ import decimal
 from human_player import player
 from aibot import ai
 from grid_board import gridBoard
+from aiTester import testAI
 
 def roundHalfUp(d): #helper-fn
     # Round to nearest with ties going away from zero.
@@ -71,7 +73,7 @@ class gomokuGame():
 
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
         self.player = player(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
-        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
+        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
 
         self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack)
 
@@ -109,7 +111,7 @@ class gomokuGame():
             if not self.isPlayerTurn:
                 row, col = self.aibot.placePiece()
                 if self.grid.checkWin(row, col, self.aibot.color):
-                    self.win(self.player)
+                    self.win(self.aibot)
                     print('WINNN')
                 else:
                     self.nextPlayer()
@@ -118,7 +120,7 @@ class gomokuGame():
         self.gameOver = True
         if winner == self.player:
             self.message.textMessage = "Player "
-        elif winner == self.player:
+        elif winner == self.aibot:
             self.message.textMessage = "AI "
         if winner.color == 'w':
             color = 'White'
@@ -129,6 +131,7 @@ class gomokuGame():
 def appStarted(app):
     length = app.width
     app.game = gomokuGame(length)
+    app.timerDelay = 1000
 
 #################################################
 # Control
@@ -152,7 +155,6 @@ def timerFired(app):
 #################################################
 
 def redrawAll(app, canvas):
-    print(app.game.message.textMessage)
     app.game.message.drawMessage(canvas)
     app.game.grid.drawScreen(canvas)
 

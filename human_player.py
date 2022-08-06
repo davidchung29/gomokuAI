@@ -45,7 +45,6 @@ class player():
         if [row, col] == self.prevVisited:
             self.prevVisited = []
             self.changeBoard(row, col)
-            print(f'plauer{row, col}')
             return [row, col]
         return None
 
