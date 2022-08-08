@@ -1,8 +1,10 @@
 import random
+from shutil import move
 
 from aibot import ai
 from grid_board import gridBoard
 from cmu_112_graphics import *
+from boardMethods import boardMethods
 
 class testAI():
 
@@ -19,10 +21,11 @@ class testAI():
             self.isPlayerTurn = False
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
-
+        self.boardMethods = boardMethods()
         self.playerAIBot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack) # substitute for human player
         self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
+        self.boardMethods = boardMethods
 
     def updateBoards(self):
         self.grid.updateBoard(self.board)
@@ -36,7 +39,7 @@ class testAI():
         if not self.gameOver:
             if self.isPlayerTurn:
                 row, col = self.playerAIBot.placePiece()
-                if self.grid.checkWin(row, col, self.playerAIBot.color):
+                if self.boardMethods.checkWin(row, col, self.playerAIBot.color, self.board):
                     self.win(self.playerAIBot)
                     print('WINNN PLAYER AI BOT')
                 else:
@@ -46,7 +49,7 @@ class testAI():
         if not self.gameOver:
             if not self.isPlayerTurn:
                 row, col = self.aibot.placePiece()
-                if self.grid.checkWin(row, col, self.aibot.color):
+                if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
                     print('WINNN')
                 else:
@@ -69,7 +72,9 @@ class testAI():
 def appStarted(app):
     length = app.width
     app.game = testAI(length)
-    app.timerDelay = 1000
+    app.timerDelay = 500
+    app.paused = False
+
 
 #################################################
 # Control
@@ -78,10 +83,13 @@ def appStarted(app):
 def keyPressed(app, event):
     if event.key == "r":
         appStarted(app)
+    elif event.key == "p":
+        app.paused = not app.paused
 
 def timerFired(app):
-    app.game.placeAI()
-    app.game.placeAIPlayer()
+    if not app.paused:
+        app.game.placeAI()
+        app.game.placeAIPlayer()
 
 #################################################
 # View

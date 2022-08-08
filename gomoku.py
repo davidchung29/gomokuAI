@@ -14,6 +14,7 @@ from human_player import player
 from aibot import ai
 from grid_board import gridBoard
 from aiTester import testAI
+from boardMethods import boardMethods
 
 def roundHalfUp(d): #helper-fn
     # Round to nearest with ties going away from zero.
@@ -70,11 +71,10 @@ class gomokuGame():
             self.isPlayerTurn = False
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
-
+        self.boardMethods = boardMethods()
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
         self.player = player(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
         self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
-
         self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack)
 
     def updateBoards(self):
