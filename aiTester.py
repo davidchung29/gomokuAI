@@ -14,7 +14,7 @@ class testAI():
         self.gameOver = False
         self.margin = 20
         self.topMargin = 50
-        self.isPlayerBlack = bool(random.randrange(0,2))
+        self.isPlayerBlack = True
         if self.isPlayerBlack:
             self.isPlayerTurn = True
         else:
@@ -38,7 +38,7 @@ class testAI():
     def placeAIPlayer(self):
         if not self.gameOver:
             if self.isPlayerTurn:
-                row, col = self.playerAIBot.placePiece()
+                row, col = self.playerAIBot.placePiece(False)
                 if self.boardMethods.checkWin(row, col, self.playerAIBot.color, self.board):
                     self.win(self.playerAIBot)
                     print('WINNN PLAYER AI BOT')
@@ -48,7 +48,7 @@ class testAI():
     def placeAI(self):
         if not self.gameOver:
             if not self.isPlayerTurn:
-                row, col = self.aibot.placePiece()
+                row, col = self.aibot.placePiece(True)
                 if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
                     print('WINNN')

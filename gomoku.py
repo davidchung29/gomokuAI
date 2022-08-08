@@ -109,7 +109,7 @@ class gomokuGame():
     def placeAI(self):
         if not self.gameOver:
             if not self.isPlayerTurn:
-                row, col = self.aibot.placePiece()
+                row, col = self.aibot.placePiece(True)
                 if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
                     print('WINNN')

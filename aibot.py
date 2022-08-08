@@ -46,6 +46,12 @@ class ai(player):
                 minUtil = min(minUtil, value) # return the min value
             return minUtil
 
+    def randomChoose(self):
+        moves = self.boardMethods.getMoves(self.color, self.board)
+        move = random.choice(moves)
+        row, col = move[0], move[1]
+        return row, col
+
     def chooseRowCol(self):
         print("hi")
         currentBest = -Infinity
@@ -55,7 +61,7 @@ class ai(player):
             print(move)
             r = move[0]
             c = move[1]
-            value = self.miniMax(r, c, self.board, True, 2)
+            value = self.miniMax(r, c, self.board, True, 3)
             if value > currentBest:
                 currentBest = value
                 row = r 
@@ -63,8 +69,11 @@ class ai(player):
         print(row, col)
         return row, col
 
-    def placePiece(self):
-        row, col = self.chooseRowCol()
+    def placePiece(self, miniMax = False):
+        if miniMax:
+            row, col = self.chooseRowCol()
+        else:
+            row, col = self.randomChoose()
         self.changeBoard(row, col)
         return row, col
     
