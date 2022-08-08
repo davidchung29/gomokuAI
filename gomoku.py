@@ -103,6 +103,9 @@ class gomokuGame():
                     if self.boardMethods.checkWin(row, col, self.player.color, self.board):
                         self.win(self.player)
                         print('WINNN')
+                    elif self.boardMethods.checkFull(self.board):
+                        self.tie()
+                        print("tiee")
                     else:
                         self.nextPlayer()
 
@@ -113,6 +116,9 @@ class gomokuGame():
                 if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
                     print('WINNN')
+                elif self.boardMethods.checkFull(self.board):
+                    self.tie()
+                    print("tiee")
                 else:
                     self.nextPlayer()
     
@@ -128,6 +134,8 @@ class gomokuGame():
             color = 'Black'
         self.message.textMessage += f"{color} Wins!!!"
 
+    def tie(self):
+        pass
 def appStarted(app):
     length = app.width
     app.game = gomokuGame(length)

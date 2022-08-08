@@ -37,7 +37,7 @@ class boardMethods():
                 score += cons ** 2
                 break
         if self.getSurr(row, col, color, board, 5):
-            score += 20
+            score += 1000
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece

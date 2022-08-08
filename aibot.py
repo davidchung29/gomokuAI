@@ -20,9 +20,9 @@ class ai(player):
     def updateBoard(self, board):
         self.board = board
     
-    def miniMax(self, row, col, board, isMaxPlayer, depth):
+    def miniMax(self, row, col, board, isMaxPlayer, depth, alpha, beta):
         if self.boardMethods.checkWin(row, col, self.color, board) or depth == 0:
-            return self.boardMethods.scoreBoard(row, col, self.color, board)
+            return self.boardMethods.scoreBoard(row, col, self.color, board) - depth
         elif isMaxPlayer:
             maxUtil = -Infinity
             for move in self.boardMethods.getMoves(self.color, board):
@@ -30,9 +30,12 @@ class ai(player):
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
                 tempBoard[row][col] = self.color
-                value = self.miniMax(row, col, tempBoard, False, depth - 1) # evaluate this node
+                value = self.miniMax(row, col, tempBoard, False, depth - 1, alpha, beta) # evaluate this node
                 # print(f"max{depth, maxUtil, value, row, col}")
                 maxUtil = max(maxUtil, value) # return the max value
+                alpha = max(alpha, value)
+                if alpha >= beta:
+                    break
             return maxUtil
         elif not isMaxPlayer:
             minUtil = +Infinity
@@ -41,9 +44,12 @@ class ai(player):
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
                 tempBoard[row][col] = self.color
-                value = self.miniMax(row, col, tempBoard, True, depth - 1) # evaluate this node
+                value = self.miniMax(row, col, tempBoard, True, depth - 1, alpha, beta) # evaluate this node
                 # print(f"min{depth, minUtil, value}")
                 minUtil = min(minUtil, value) # return the min value
+                beta = min(beta, value)
+                if beta <= alpha:
+                    break
             return minUtil
 
     def randomChoose(self):
@@ -61,12 +67,14 @@ class ai(player):
             print(move)
             r = move[0]
             c = move[1]
-            value = self.miniMax(r, c, self.board, True, 3)
+            value = self.miniMax(r, c, self.board, True, 4, -Infinity, +Infinity)
             if value > currentBest:
                 currentBest = value
                 row = r 
                 col = c
         print(row, col)
+        if not row or not col:
+            row, col = self.randomChoose()
         return row, col
 
     def placePiece(self, miniMax = False):
