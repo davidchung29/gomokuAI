@@ -35,13 +35,13 @@ class gridBoard():
         self.drawBoard(canvas)
         self.drawPieces(canvas)
 
-    def drawBoard(self, canvas):
+    def drawBoard(self, canvas): #https://www.cs.cmu.edu/~112/notes/notes-animations-part2.html
         for row in range(self.cells - 1):
             for col in range(self.cells - 1):
                 x0, y0, x1, y1 = self.getCell(row, col)
                 canvas.create_rectangle(x0, y0, x1, y1, outline = "black")
 
-    def drawPieces(self, canvas):
+    def drawPieces(self, canvas): #https://www.cs.cmu.edu/~112/notes/notes-graphics.html
         for row in range(self.cells):
             for col in range(self.cells):
                 piece = self.board[row][col]

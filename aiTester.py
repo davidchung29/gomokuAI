@@ -19,11 +19,12 @@ class testAI():
             self.isPlayerTurn = True
         else:
             self.isPlayerTurn = False
+        self.winRows = 3
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
-        self.boardMethods = boardMethods(self.cells)
-        self.playerAIBot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack) # substitute for human player
-        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
+        self.boardMethods = boardMethods(self.cells, winRows=3)
+        self.playerAIBot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack, self.winRows) # substitute for human player
+        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.winRows)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
 
 
@@ -42,6 +43,8 @@ class testAI():
                 if self.boardMethods.checkWin(row, col, self.playerAIBot.color, self.board):
                     self.win(self.playerAIBot)
                     print('WINNN PLAYER AI BOT')
+                elif self.boardMethods.checkFull(self.board):
+                    self.tie()
                 else:
                     self.nextPlayer()
 
@@ -52,6 +55,8 @@ class testAI():
                 if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
                     print('WINNN')
+                elif self.boardMethods.checkFull(self.board):
+                    self.tie()
                 else:
                     self.nextPlayer()
     
@@ -68,6 +73,9 @@ class testAI():
         message += f"{color} Wins!!!"
 
         return message
+    def tie(self):
+        self.gameOver = True
+        message = "Tie"
 
 def appStarted(app):
     length = app.width

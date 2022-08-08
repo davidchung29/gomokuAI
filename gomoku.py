@@ -59,22 +59,23 @@ class message():
 class gomokuGame():
 
     def __init__(self, length):
-        self.cells = 3
+        self.cells = 5
         self.length = length
         self.margin = 20
         self.topMargin = 50
         self.gameOver = False
         self.isPlayerBlack = bool(random.randrange(0,2))
+        self.winRows = 4
         if self.isPlayerBlack:
             self.isPlayerTurn = True
         else:
             self.isPlayerTurn = False
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
-        self.boardMethods = boardMethods(self.cells)
+        self.boardMethods = boardMethods(self.cells, self.winRows)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
         self.player = player(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
-        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
+        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.winRows)
         self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack)
 
     def updateBoards(self):
@@ -136,7 +137,7 @@ class gomokuGame():
 
     def tie(self):
         pass
-def appStarted(app):
+def appStarted(app): #https://www.cs.cmu.edu/~112/notes/notes-animations-part1.html
     length = app.width
     app.game = gomokuGame(length)
     app.timerDelay = 1000

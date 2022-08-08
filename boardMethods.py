@@ -2,8 +2,9 @@ import copy
 
 class boardMethods():
     ## Functions for AI to use with board
-    def __init__(self, cells):
+    def __init__(self, cells, winRows):
         self.cells = cells
+        self.winRows = winRows #amount of rows to win
 
     def convertBoard(self, board):
         result = ''
@@ -36,12 +37,19 @@ class boardMethods():
             if self.getSurr(row, col, color, board, cons):
                 score += cons ** 2
                 break
-        if self.getSurr(row, col, color, board, 5):
+        if self.checkWin(row, col, color, board):
             score += 1000
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece
-        return self.getSurr(row, col, color, board, self.cells)
+        return self.getSurr(row, col, color, board, self.winRows)
+    
+    def checkFull(self, board):
+        for row in board:
+            for element in row:
+                if element == "":
+                    return False
+        return True
     
     def getSurr(self, row, col, color, board, rowCount):
         winRow = 5
