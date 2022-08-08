@@ -9,7 +9,7 @@ from boardMethods import boardMethods
 class testAI():
 
     def __init__(self, length):
-        self.cells = 15
+        self.cells = 5
         self.length = length
         self.gameOver = False
         self.margin = 20
@@ -21,11 +21,11 @@ class testAI():
             self.isPlayerTurn = False
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
-        self.boardMethods = boardMethods()
+        self.boardMethods = boardMethods(self.cells)
         self.playerAIBot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack) # substitute for human player
         self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
-        self.boardMethods = boardMethods
+
 
     def updateBoards(self):
         self.grid.updateBoard(self.board)
@@ -101,6 +101,7 @@ def redrawAll(app, canvas):
 
 def main():
     runApp(width=600, height=650)
+
 
 if __name__ == '__main__':
     main()

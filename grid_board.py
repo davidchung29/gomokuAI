@@ -10,7 +10,7 @@ class gridBoard():
         self.cells = cells
         self.cellLength = (self.length - (2 * self.margin))/(self.cells - 1)
 
-        self.pieceR = self.cellLength/2 - 3
+        self.pieceR = self.cellLength/4
         self.isGameOver = False 
 
     def updateBoard(self, board):

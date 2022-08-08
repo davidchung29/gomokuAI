@@ -11,16 +11,18 @@ class ai(player):
         super().__init__(board, length, margin, topMargin, cells, isBlack)
         if self.isBlack:
             self.color = "b"
+            self.oppColor = 'w'
         else:
             self.color = "w"
-        self.boardMethods = boardMethods()
+            self.oppColor = 'b'
+        self.boardMethods = boardMethods(self.cells)
 
     def updateBoard(self, board):
         self.board = board
     
     def miniMax(self, row, col, board, isMaxPlayer, depth):
         if self.boardMethods.checkWin(row, col, self.color, board) or depth == 0:
-            return self.boardMethods.scoreBoard(row, col, self.color, board) - depth, [row, col]
+            return self.boardMethods.scoreBoard(row, col, self.color, board)
         elif isMaxPlayer:
             maxUtil = -Infinity
             for move in self.boardMethods.getMoves(self.color, board):
@@ -29,34 +31,36 @@ class ai(player):
                 tempBoard = copy.deepcopy(board)
                 tempBoard[row][col] = self.color
                 value = self.miniMax(row, col, tempBoard, False, depth - 1) # evaluate this node
-                maxUtil = max(maxUtil, value[0]) # return the max value
-            return maxUtil, move
+                # print(f"max{depth, maxUtil, value, row, col}")
+                maxUtil = max(maxUtil, value) # return the max value
+            return maxUtil
         elif not isMaxPlayer:
             minUtil = +Infinity
-            for move in self.boardMethods.getMoves(self.color, board):
+            for move in self.boardMethods.getMoves(self.oppColor, board):
                 row = move[0]
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
                 tempBoard[row][col] = self.color
                 value = self.miniMax(row, col, tempBoard, True, depth - 1) # evaluate this node
-                minUtil = min(minUtil, value[0]) # return the max value
-            return minUtil, move
+                # print(f"min{depth, minUtil, value}")
+                minUtil = min(minUtil, value) # return the min value
+            return minUtil
 
     def chooseRowCol(self):
         print("hi")
         currentBest = -Infinity
-        print(f"current{currentBest}")
         row = None
         col = None
         for move in self.boardMethods.getMoves(self.color, self.board):
             print(move)
             r = move[0]
             c = move[1]
-            value = self.miniMax(r, c, self.board, False, 1)
-            if value[0] > currentBest:
+            value = self.miniMax(r, c, self.board, True, 2)
+            if value > currentBest:
                 currentBest = value
                 row = r 
                 col = c
+        print(row, col)
         return row, col
 
     def placePiece(self):

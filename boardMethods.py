@@ -2,11 +2,13 @@ import copy
 
 class boardMethods():
     ## Functions for AI to use with board
+    def __init__(self, cells):
+        self.cells = cells
 
     def convertBoard(self, board):
         result = ''
-        for row in range(len(board)):
-            for col in range(len(board[0])):
+        for row in range(self.cells):
+            for col in range(self.cells):
                 if board[row][col] == "":
                     result += '.'
                 else:
@@ -15,8 +17,8 @@ class boardMethods():
     
     def getMoves(self, color, board):
         moves = [] #moves with which row, col, piece was added
-        for row in range(len(board)):
-            for col in range(len(board[0])):
+        for row in range(self.cells):
+            for col in range(self.cells):
                 tempBoard = copy.deepcopy(board)
                 if tempBoard[row][col] == "":
                     tempBoard[row][col] = color
@@ -32,23 +34,22 @@ class boardMethods():
         score = 0
         for cons in range(4,0,-1):
             if self.getSurr(row, col, color, board, cons):
-                score += cons
+                score += cons ** 2
                 break
         if self.getSurr(row, col, color, board, 5):
             score += 20
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece
-        return self.getSurr(row, col, color, board, 5)
+        return self.getSurr(row, col, color, board, self.cells)
     
     def getSurr(self, row, col, color, board, rowCount):
-        cells = len(board)
         winRow = 5
         surrRange = winRow - 1
         minRow = max((row - surrRange), 0)
-        maxRow = min((row + surrRange), cells - 1)
+        maxRow = min((row + surrRange), self.cells - 1)
         minCol = max((col - surrRange), 0)
-        maxCol = min((col + surrRange), cells - 1)
+        maxCol = min((col + surrRange), self.cells - 1)
 
         hList = board[row][minCol:maxCol+1]
         vList = []

@@ -59,7 +59,7 @@ class message():
 class gomokuGame():
 
     def __init__(self, length):
-        self.cells = 15
+        self.cells = 3
         self.length = length
         self.margin = 20
         self.topMargin = 50
@@ -71,7 +71,7 @@ class gomokuGame():
             self.isPlayerTurn = False
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
-        self.boardMethods = boardMethods()
+        self.boardMethods = boardMethods(self.cells)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
         self.player = player(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
         self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
@@ -100,7 +100,7 @@ class gomokuGame():
                     self.message.textMessage = "Invalid Placement"
                 else:
                     row, col = move[0], move[1]
-                    if self.grid.checkWin(row, col, self.player.color):
+                    if self.boardMethods.checkWin(row, col, self.player.color, self.board):
                         self.win(self.player)
                         print('WINNN')
                     else:
@@ -110,7 +110,7 @@ class gomokuGame():
         if not self.gameOver:
             if not self.isPlayerTurn:
                 row, col = self.aibot.placePiece()
-                if self.grid.checkWin(row, col, self.aibot.color):
+                if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
                     print('WINNN')
                 else:
