@@ -65,7 +65,7 @@ class gomokuGame():
         self.topMargin = 50
         self.gameOver = False
         self.isPlayerBlack = bool(random.randrange(0,2))
-        self.winRows = 4
+        self.winRows = 4 # number of rows to win
         if self.isPlayerBlack:
             self.isPlayerTurn = True
         else:

@@ -1,5 +1,6 @@
 PROJECT PLAN TP1
 
+Name: Gomoku AI
 
 Project Description
 
@@ -34,6 +35,15 @@ This file contains the class ai which is a child class of player. It basically m
 grid_board.py
 
 This file contains the class gridBoard, which is used for generating the game board, updating the board, checking if a player has won, and drawing the game
+
+
+Algorithmic Plan
+
+This project will used an optimized Alpha-Beta pruning algorithm in order to find the best move to make in gomoku.
+
+In order to check how many pieces a player has made in a row, or to check if a player has won, the row and col values of the last placed piece will be stored, and the diagonols, horizontal, and vertical rows will be checked to see how many pieces a player has in a row.
+
+
 
 
 

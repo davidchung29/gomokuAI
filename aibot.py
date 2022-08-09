@@ -4,6 +4,7 @@ import copy
 from human_player import player
 from boardMethods import boardMethods
 
+
 class ai(player):
 
     def __init__(self, board, length, margin, topMargin, cells, isBlack, winRows):
@@ -16,17 +17,37 @@ class ai(player):
             self.oppColor = 'b'
         self.winRows = winRows
         self.abDepth = 4
+        self.madeFirstMove = False
         self.boardMethods = boardMethods(self.cells, self.winRows)
+
+        self.data = dict()
+        self.updateData()
 
     def updateBoard(self, board):
         self.board = board
+
+    def updateData(self, entry=None): #update the data file - entry is if new board,score is added
+        f = open(f"aiData{self.cells}.csv")
+        fAdd = open(f"aiData{self.cells}.csv", "a")
+        if entry:
+            strEntry = f"{entry[0]},{entry[1]}"
+            fAdd.write(f"\n{strEntry}")
+        for line in f:
+            lineData = line.strip().split(",")
+            self.data[lineData[0]] = lineData[1]
+        f.close()
         
-    #https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/ 
-    #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague
+    #https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/ - used to read about an example of how alphabeta could be implemented in tictactoe
+    #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - used to learn alphabeta and minimax visually
     def miniMax(self, row, col, board, isMaxPlayer, depth, alpha, beta):
         if self.boardMethods.checkWin(row, col, self.color, board) or depth == 0:
-            value = self.boardMethods.scoreBoard(row, col, self.color, board) - (self.abDepth-depth)
-            return value
+            convertedBoard = self.boardMethods.convertBoard(board)
+            if convertedBoard in self.data:
+                value = self.data[convertedBoard]
+            else:
+                value = self.boardMethods.scoreBoard(row, col, self.color, board)
+                self.updateData([convertedBoard, value])
+            return value - (self.abDepth-depth)
         elif isMaxPlayer:
             maxUtil = float("-inf")
             for move in self.boardMethods.getMoves(self.color, board):
@@ -62,11 +83,15 @@ class ai(player):
         return row, col
 
     def chooseRowCol(self):
-        print("hi")
+        if self.madeFirstMove:
+            moves = self.boardMethods.getNearbyMoves(self.color, 1, self.board)
+        else:
+            moves = self.boardMethods.getMoves(self.color, self.board)
+            self.madeFirstMove = True
         currentBest = float("-inf")
         row = None
         col = None
-        for move in self.boardMethods.getMoves(self.color, self.board):
+        for move in moves:
             r = move[0]
             c = move[1]
             tempBoard = copy.deepcopy(self.board)
@@ -77,7 +102,6 @@ class ai(player):
                 currentBest = value
                 row = r 
                 col = c
-        print(row, col)
         return row, col
 
     def placePiece(self, miniMax = False):

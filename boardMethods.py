@@ -5,7 +5,7 @@ class boardMethods():
     def __init__(self, cells, winRows):
         self.cells = cells
         self.winRows = winRows #amount of rows to win
-
+        
     def convertBoard(self, board):
         result = ''
         for row in range(self.cells):
@@ -20,11 +20,26 @@ class boardMethods():
         moves = [] #moves with which row, col, piece was added
         for row in range(self.cells):
             for col in range(self.cells):
-                tempBoard = copy.deepcopy(board)
-                if tempBoard[row][col] == "":
-                    tempBoard[row][col] = color
+                if board[row][col] == "":
                     moves.append([row, col])
         return moves
+
+# O(N^4) time complexity is bothering me
+    def getNearbyMoves(self, color, dist, board): #dist is distance from the point 
+        moves = set()
+        for row in range(self.cells):
+            for col in range(self.cells):
+                print(f"rc {row,col}")
+                if board[row][col] == color:
+                    topLeft = [max(0, row-dist), max(0, col-dist)]#row, col
+                    botRight = [min(self.cells, row+dist), min(self.cells, row+dist)]#row, col
+                    print(f"tb = {topLeft, botRight}")
+                    for nearR in range(topLeft[0], botRight[0]+1):
+                        for nearC in range(topLeft[1], botRight[1]):
+                            if board[nearR][nearC] == "":
+                                moves.add((nearR, nearC))
+        return moves
+
 
     ## Functions for scoring a board including if a player won  
 
