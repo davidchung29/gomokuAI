@@ -5,7 +5,7 @@ class boardMethods():
     def __init__(self, cells, winRows):
         self.cells = cells
         self.winRows = winRows #amount of rows to win
-        
+
     def convertBoard(self, board):
         result = ''
         for row in range(self.cells):
@@ -30,12 +30,12 @@ class boardMethods():
         for row in range(self.cells):
             for col in range(self.cells):
                 print(f"rc {row,col}")
-                if board[row][col] == color:
+                if board[row][col] != "":
                     topLeft = [max(0, row-dist), max(0, col-dist)]#row, col
-                    botRight = [min(self.cells, row+dist), min(self.cells, row+dist)]#row, col
+                    botRight = [min(self.cells-1, row+dist), min(self.cells-1, row+dist)]#row, col
                     print(f"tb = {topLeft, botRight}")
                     for nearR in range(topLeft[0], botRight[0]+1):
-                        for nearC in range(topLeft[1], botRight[1]):
+                        for nearC in range(topLeft[1], botRight[1]+1):
                             if board[nearR][nearC] == "":
                                 moves.add((nearR, nearC))
         return moves
@@ -43,7 +43,7 @@ class boardMethods():
 
     ## Functions for scoring a board including if a player won  
 
-    def scoreBoard(self, row, col, color, board):
+    def scoreBoard(self, row, col, color, oppColor, board):
         # iterate through consecutives and add to score
         # return score
         # dont have to call for every move
@@ -54,6 +54,10 @@ class boardMethods():
                 break
         if self.checkWin(row, col, color, board):
             score += 1000
+        oppBoard = copy.deepcopy(board)
+        oppBoard[row][col] = oppColor
+        if self.checkWin(row, col, oppColor, oppBoard):
+            score += 2000
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece

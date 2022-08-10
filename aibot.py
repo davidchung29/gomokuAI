@@ -16,8 +16,10 @@ class ai(player):
             self.color = "w"
             self.oppColor = 'b'
         self.winRows = winRows
-        self.abDepth = 4
-        self.madeFirstMove = False
+        self.abDepth = 3
+        self.madeFirstMove = True
+        if self.isBlack:
+            self.madeFirstMove = False
         self.boardMethods = boardMethods(self.cells, self.winRows)
 
         self.data = dict()
@@ -27,27 +29,30 @@ class ai(player):
         self.board = board
 
     def updateData(self, entry=None): #update the data file - entry is if new board,score is added
-        f = open(f"aiData{self.cells}.csv")
-        fAdd = open(f"aiData{self.cells}.csv", "a")
-        if entry:
-            strEntry = f"{entry[0]},{entry[1]}"
-            fAdd.write(f"\n{strEntry}")
-        for line in f:
-            lineData = line.strip().split(",")
-            self.data[lineData[0]] = lineData[1]
-        f.close()
+        pass
+        # f = open(f"aiData{self.cells}.csv")
+        # fAdd = open(f"aiData{self.cells}.csv", "a")
+        # if entry:
+        #     strEntry = f"{entry[0]},{entry[1]}"
+        #     fAdd.write(f"\n{strEntry}")
+        # for line in f:
+        #     lineData = line.strip().split(",")
+        #     self.data[lineData[0]] = lineData[1]
+        # f.close()
         
     #https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/ - used to read about an example of how alphabeta could be implemented in tictactoe
     #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - used to learn alphabeta and minimax visually
+    #https://www.javatpoint.com/ai-alpha-beta-pruning#:~:text=The%20two%2Dparameter%20can%20be,along%20the%20path%20of%20Minimizer. - used for finding role of alpha and beta in pruning branches in minimax
     def miniMax(self, row, col, board, isMaxPlayer, depth, alpha, beta):
         if self.boardMethods.checkWin(row, col, self.color, board) or depth == 0:
             convertedBoard = self.boardMethods.convertBoard(board)
             if convertedBoard in self.data:
                 value = self.data[convertedBoard]
             else:
-                value = self.boardMethods.scoreBoard(row, col, self.color, board)
-                self.updateData([convertedBoard, value])
-            return value - (self.abDepth-depth)
+                value = self.boardMethods.scoreBoard(row, col, self.color, self.oppColor, board)
+                #self.updateData([convertedBoard, value])
+            print(value, depth, value - (self.abDepth-depth)**2)
+            return value - (self.abDepth-depth)**2
         elif isMaxPlayer:
             maxUtil = float("-inf")
             for move in self.boardMethods.getMoves(self.color, board):
@@ -83,25 +88,25 @@ class ai(player):
         return row, col
 
     def chooseRowCol(self):
-        if self.madeFirstMove:
-            moves = self.boardMethods.getNearbyMoves(self.color, 1, self.board)
-        else:
-            moves = self.boardMethods.getMoves(self.color, self.board)
-            self.madeFirstMove = True
-        currentBest = float("-inf")
         row = None
         col = None
-        for move in moves:
-            r = move[0]
-            c = move[1]
-            tempBoard = copy.deepcopy(self.board)
-            tempBoard[r][c] = self.color
-            value = self.miniMax(r, c, tempBoard, False, self.abDepth, float("-inf"), float("inf"))
-            print(move, value)
-            if value > currentBest:
-                currentBest = value
-                row = r 
-                col = c
+        if self.madeFirstMove:
+            moves = self.boardMethods.getNearbyMoves(self.color, 1, self.board)
+            currentBest = float("-inf")
+            for move in moves:
+                r = move[0]
+                c = move[1]
+                tempBoard = copy.deepcopy(self.board)
+                tempBoard[r][c] = self.color
+                value = self.miniMax(r, c, tempBoard, False, self.abDepth, float("-inf"), float("inf"))
+                print(move, value)
+                if value > currentBest:
+                    currentBest = value
+                    row = r 
+                    col = c
+        else:
+            row, col = self.randomChoose()
+            self.madeFirstMove = True
         return row, col
 
     def placePiece(self, miniMax = False):
