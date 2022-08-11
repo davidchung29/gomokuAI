@@ -44,7 +44,7 @@ class ai(player):
     #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - used to learn alphabeta and minimax visually
     #https://www.javatpoint.com/ai-alpha-beta-pruning#:~:text=The%20two%2Dparameter%20can%20be,along%20the%20path%20of%20Minimizer. - used for finding role of alpha and beta in pruning branches in minimax
     def miniMax(self, row, col, board, isMaxPlayer, depth, alpha, beta):
-        if self.boardMethods.checkWin(row, col, self.color, board) or depth == 0:
+        if self.boardMethods.checkWin(row, col, self.color, board) or self.boardMethods.checkWin(row, col, self.oppColor, board) or depth == 0:
             convertedBoard = self.boardMethods.convertBoard(board)
             if convertedBoard in self.data:
                 value = self.data[convertedBoard]
@@ -55,7 +55,7 @@ class ai(player):
             return value - (self.abDepth-depth)**2
         elif isMaxPlayer:
             maxUtil = float("-inf")
-            for move in self.boardMethods.getMoves(self.color, board):
+            for move in self.boardMethods.getNearbyMoves(self.color, 1, board):
                 row = move[0]
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
@@ -68,7 +68,7 @@ class ai(player):
             return maxUtil
         elif not isMaxPlayer:
             minUtil = float("inf")
-            for move in self.boardMethods.getMoves(self.oppColor, board):
+            for move in self.boardMethods.getNearbyMoves(self.oppColor, 1, board):
                 row = move[0]
                 col = move[1]
                 tempBoard = copy.deepcopy(board)

@@ -29,11 +29,12 @@ def roundHalfUp(d): #helper-fn
 
 class message():
 
-    def __init__(self, length, topMargin, isPlayerTurn, isPlayerBlack):
+    def __init__(self, length, topMargin, isPlayerTurn, isPlayerBlack, player2Exist):
         self.length = length
         self.topMargin = topMargin
         self.isPlayerTurn = isPlayerTurn
         self.isPlayerBlack = isPlayerBlack
+        self.player2Exist = player2Exist
         self.textMessage = ""
         self.updateMessageTurn(self.isPlayerTurn)
 
@@ -47,11 +48,15 @@ class message():
             else:
                 self.textMessage += " White"
         else:
-            self.textMessage = "AI:"
+            if self.player2Exist:
+                self.textMessage = "Player 2:"
+            else:
+                self.textMessage = "AI:"
             if self.isPlayerBlack:
                 self.textMessage += " White"
             else:
                 self.textMessage += " Black"
+        print(self.textMessage)
 
     def drawMessage(self, canvas):
         canvas.create_text(self.length/2, self.topMargin/2, text = self.textMessage, fill = "#954535", font = "Helvetica 30 bold")
@@ -74,19 +79,31 @@ class gomokuGame():
         self.player2Exist = player2Exist
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
-        self.boardMethods = boardMethods(self.cells, self.winRows)
+        self.initializeClasses()
 
+    def initializeClasses(self):
+        self.boardMethods = boardMethods(self.cells, self.winRows)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
         self.player = player(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
         self.player2 = player(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
         self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.winRows)
-        self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack)
+        self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack, self.player2Exist)
+
 
     def updateBoards(self):
         self.grid.updateBoard(self.board)
         self.player.updateBoard(self.board)
         self.aibot.updateBoard(self.board)
-
+    
+    def resizeBoard(self, isIncrease):
+        if isIncrease and self.cells < 20:
+            self.cells += 1
+            self.board = [[""] * self.cells for _ in range(self.cells)]
+            self.initializeClasses()
+        elif not isIncrease and self.cells > 2:
+            self.cells -= 1
+            self.board = [[""] * self.cells for _ in range(self.cells)]
+            self.initializeClasses()
 
     def nextPlayer(self):
         self.isPlayerTurn = not self.isPlayerTurn
@@ -122,6 +139,7 @@ class gomokuGame():
         if not self.gameOver:
             if not self.isPlayerTurn:
                 move = self.player2.placePiece(x, y) #row, col
+                print(move)
                 if move == None:
                     self.message.textMessage = "Invalid Placement"
                 else:
@@ -171,6 +189,10 @@ def appStarted(app): #https://www.cs.cmu.edu/~112/notes/notes-animations-part1.h
     gameMode = input("type 1 for 1 player, 2 for 2 player: ")
     if gameMode == "2":
         app.player2 = True
+    elif gameMode == "1":
+        app.player2 = False
+    else:
+        gameMode = input("type 1 for 1 player, 2 for 2 player: ")
     app.game = gomokuGame(length, app.player2)
     app.timerDelay = 1000
 
@@ -180,15 +202,21 @@ def appStarted(app): #https://www.cs.cmu.edu/~112/notes/notes-animations-part1.h
 
 def mouseMoved(app, event):
     app.game.moving(event.x, event.y) # turnblack
-    app.game.movingPlayer2(event.x, event.y)
+    if app.player2:
+        app.game.movingPlayer2(event.x, event.y)
 
 def mousePressed(app, event):
     app.game.placePlayer(event.x, event.y)
-    app.game.placePlayer2(event.x, event.y)
+    if app.player2:
+        app.game.placePlayer2(event.x, event.y)
 
 def keyPressed(app, event):
     if event.key == "r":
         appStarted(app)
+    elif event.key == "Up":
+        app.game.resizeBoard(True)
+    elif event.key == "Down":
+        app.game.resizeBoard(False)
 
 def timerFired(app):
     if not app.player2:

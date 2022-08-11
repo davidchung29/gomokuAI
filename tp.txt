@@ -44,9 +44,13 @@ This project will used an optimized Alpha-Beta pruning algorithm in order to fin
 In order to check how many pieces a player has made in a row, or to check if a player has won, the row and col values of the last placed piece will be stored, and the diagonols, horizontal, and vertical rows will be checked to see how many pieces a player has in a row.
 
 
+Version Control
+
+Github will be used to backup the code. The repository will be https://github.com/davidchung29/gomokuAI in branch master
 
 
+TP2 Update
 
-
+At the start of the game, the user can choose between 1 player mode and two player mode in the console.
 
 
