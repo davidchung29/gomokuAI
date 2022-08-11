@@ -25,15 +25,15 @@ class boardMethods():
         return moves
 
 # O(N^4) time complexity is bothering me
-    def getNearbyMoves(self, color, dist, board): #dist is distance from the point 
+    def getNearbyMoves(self, dist, board): #dist is distance from the point 
         moves = set()
         for row in range(self.cells):
             for col in range(self.cells):
-                print(f"rc {row,col}")
+                #print(f"rc {row,col}")
                 if board[row][col] != "":
                     topLeft = [max(0, row-dist), max(0, col-dist)]#row, col
                     botRight = [min(self.cells-1, row+dist), min(self.cells-1, row+dist)]#row, col
-                    print(f"tb = {topLeft, botRight}")
+                    #print(f"tb = {topLeft, botRight}")
                     for nearR in range(topLeft[0], botRight[0]+1):
                         for nearC in range(topLeft[1], botRight[1]+1):
                             if board[nearR][nearC] == "":
@@ -48,16 +48,16 @@ class boardMethods():
         # return score
         # dont have to call for every move
         score = 0
-        for cons in range(4,0,-1):
+        for cons in range(self.winRows,0,-1):
             if self.getSurr(row, col, color, board, cons):
                 score += cons ** 2
                 break
         if self.checkWin(row, col, color, board):
-            score += 1000
+            score += 50
         oppBoard = copy.deepcopy(board)
         oppBoard[row][col] = oppColor
         if self.checkWin(row, col, oppColor, oppBoard):
-            score += 2000
+            score -= 100
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece
@@ -71,8 +71,7 @@ class boardMethods():
         return True
     
     def getSurr(self, row, col, color, board, rowCount):
-        winRow = 5
-        surrRange = winRow - 1
+        surrRange = self.winRows - 1
         minRow = max((row - surrRange), 0)
         maxRow = min((row + surrRange), self.cells - 1)
         minCol = max((col - surrRange), 0)

@@ -1,3 +1,4 @@
+
 from cgi import test
 from sys import builtin_module_names
 from cmu_112_graphics import *
@@ -64,7 +65,7 @@ class message():
 class gomokuGame():
 
     def __init__(self, length, player2Exist): # if player2 is True, it will be a 2 player
-        self.cells = 5
+        self.cells = 6
         self.length = length
         self.margin = 20
         self.topMargin = 50

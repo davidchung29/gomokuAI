@@ -1,5 +1,6 @@
 import random
 import copy
+import os
 
 from human_player import player
 from boardMethods import boardMethods
@@ -16,29 +17,26 @@ class ai(player):
             self.color = "w"
             self.oppColor = 'b'
         self.winRows = winRows
-        self.abDepth = 3
+        self.abDepth = 5
         self.madeFirstMove = True
         if self.isBlack:
             self.madeFirstMove = False
+        self.board = board
         self.boardMethods = boardMethods(self.cells, self.winRows)
 
         self.data = dict()
-        self.updateData()
+        f = open(f"aiData5.csv")
+        for line in f:
+            lineData = line.strip().split(",")
+            self.data[lineData[0]] = lineData[1]
+        f.close()
 
-    def updateBoard(self, board):
-        self.board = board
-
-    def updateData(self, entry=None): #update the data file - entry is if new board,score is added
-        pass
-        # f = open(f"aiData{self.cells}.csv")
-        # fAdd = open(f"aiData{self.cells}.csv", "a")
-        # if entry:
-        #     strEntry = f"{entry[0]},{entry[1]}"
-        #     fAdd.write(f"\n{strEntry}")
-        # for line in f:
-        #     lineData = line.strip().split(",")
-        #     self.data[lineData[0]] = lineData[1]
-        # f.close()
+    def updateData(self): #update the data file - write what is in current file onto variable, which is returned, and onto the file, write everthing in self.data
+        fAdd = open(f"aiData5.csv", "w")
+        if self.data:
+            for element in self.data:
+                fAdd.write(f'{element}, {self.data[element]}\n')
+        fAdd.close()
         
     #https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/ - used to read about an example of how alphabeta could be implemented in tictactoe
     #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - used to learn alphabeta and minimax visually
@@ -46,16 +44,18 @@ class ai(player):
     def miniMax(self, row, col, board, isMaxPlayer, depth, alpha, beta):
         if self.boardMethods.checkWin(row, col, self.color, board) or self.boardMethods.checkWin(row, col, self.oppColor, board) or depth == 0:
             convertedBoard = self.boardMethods.convertBoard(board)
-            if convertedBoard in self.data:
+            if self.data and (convertedBoard in self.data):
                 value = self.data[convertedBoard]
+                #print("found")
             else:
                 value = self.boardMethods.scoreBoard(row, col, self.color, self.oppColor, board)
-                #self.updateData([convertedBoard, value])
-            print(value, depth, value - (self.abDepth-depth)**2)
-            return value - (self.abDepth-depth)**2
+                self.data[convertedBoard] = value
+                #print("added")
+                #print(value, depth, value - (self.abDepth-depth)**2)
+            return value - (self.abDepth-depth)
         elif isMaxPlayer:
             maxUtil = float("-inf")
-            for move in self.boardMethods.getNearbyMoves(self.color, 1, board):
+            for move in self.boardMethods.getNearbyMoves(1, board):
                 row = move[0]
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
@@ -68,7 +68,7 @@ class ai(player):
             return maxUtil
         elif not isMaxPlayer:
             minUtil = float("inf")
-            for move in self.boardMethods.getNearbyMoves(self.oppColor, 1, board):
+            for move in self.boardMethods.getNearbyMoves(1, board):
                 row = move[0]
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
@@ -91,7 +91,7 @@ class ai(player):
         row = None
         col = None
         if self.madeFirstMove:
-            moves = self.boardMethods.getNearbyMoves(self.color, 1, self.board)
+            moves = self.boardMethods.getNearbyMoves(1, self.board)
             currentBest = float("-inf")
             for move in moves:
                 r = move[0]
@@ -99,7 +99,7 @@ class ai(player):
                 tempBoard = copy.deepcopy(self.board)
                 tempBoard[r][c] = self.color
                 value = self.miniMax(r, c, tempBoard, False, self.abDepth, float("-inf"), float("inf"))
-                print(move, value)
+                #print(move, value)
                 if value > currentBest:
                     currentBest = value
                     row = r 
@@ -119,3 +119,4 @@ class ai(player):
     
     def changeBoard(self, row, col):
         self.board[row][col] = self.color
+        self.updateData()
