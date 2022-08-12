@@ -29,11 +29,9 @@ class boardMethods():
         moves = set()
         for row in range(self.cells):
             for col in range(self.cells):
-                #print(f"rc {row,col}")
                 if board[row][col] != "":
                     topLeft = [max(0, row-dist), max(0, col-dist)]#row, col
                     botRight = [min(self.cells-1, row+dist), min(self.cells-1, row+dist)]#row, col
-                    #print(f"tb = {topLeft, botRight}")
                     for nearR in range(topLeft[0], botRight[0]+1):
                         for nearC in range(topLeft[1], botRight[1]+1):
                             if board[nearR][nearC] == "":

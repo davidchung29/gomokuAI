@@ -75,7 +75,6 @@ class ai(player):
                         for c in range(len(tempBoard[r])):
                             tempBoard[r][c] = resBoard[r][c]
                 value = self.miniMax(row, col, tempBoard, True, depth - 1, alpha, beta) # evaluate this node
-                # print(f"min{depth, minUtil, value}")
                 minUtil = min(minUtil, value) # return the min value
                 beta = min(beta, value)
                 if beta <= alpha:
@@ -100,7 +99,6 @@ class ai(player):
                 tempBoard = copy.deepcopy(self.board)
                 tempBoard[r][c] = self.color
                 value = self.miniMax(r, c, tempBoard, False, self.abDepth, float("-inf"), float("inf"))
-                #print(move, value)
                 if value > currentBest:
                     currentBest = value
                     row = r 
@@ -115,7 +113,6 @@ class ai(player):
             row, col = self.chooseRowCol()
         else:
             row, col = self.randomChoose()
-        print(row, col)
         self.board[row][col] = self.color
         return row, col
     

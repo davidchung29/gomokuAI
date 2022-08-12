@@ -21,7 +21,6 @@ class message():
             self.textMessage = "Player AI: Black"
         else:
             self.textMessage = "AI Bot: White"
-        print(self.textMessage)
 
     def drawMessage(self, canvas):
         canvas.create_text(self.length/2, self.topMargin/2, text = self.textMessage, fill = "#954535", font = "Helvetica 30 bold")
@@ -72,13 +71,10 @@ class testAI():
                 if self.flipMode and flipWin:
                     if flipWin == player.color:
                         self.win(player)
-                        print('WINNN')
                     elif flipWin == oppPlayer.color:
                         self.win(oppPlayer)
-                        print('WINNN')
                 elif self.boardMethods.checkWin(row, col, self.playerAIBot.color, self.board):
                     self.win(self.playerAIBot)
-                    print('WINNN PLAYER AI BOT')
                 elif self.boardMethods.checkFull(self.board):
                     self.tie()
                 else:
@@ -99,13 +95,10 @@ class testAI():
                 if self.flipMode and flipWin:
                     if flipWin == player.color:
                         self.win(player)
-                        print('WINNN')
                     elif flipWin == oppPlayer.color:
                         self.win(oppPlayer)
-                        print('WINNN')
                 if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
-                    print('WINNN')
                 elif self.boardMethods.checkFull(self.board):
                     self.tie()
                 else:
@@ -126,7 +119,7 @@ class testAI():
 
     def tie(self):
         self.gameOver = True
-        message = "Tie"
+        self.message.textMessage += f"Tie"
         self.aibot.updateData()
 
 def appStarted(app):

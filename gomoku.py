@@ -1,5 +1,4 @@
 
-from cgi import test
 from cmu_112_graphics import *
 import random
 
@@ -56,7 +55,6 @@ class message():
                 self.textMessage += " White"
             else:
                 self.textMessage += " Black"
-        print(self.textMessage)
 
     def drawMessage(self, canvas):
         canvas.create_text(self.length/2, self.topMargin/2, text = self.textMessage, fill = "#954535", font = "Helvetica 30 bold")
@@ -132,16 +130,12 @@ class gomokuGame():
                 if self.flipMode and flipWin:
                     if flipWin == humanPlayer.color:
                         self.win(humanPlayer)
-                        print('WINNN')
                     elif flipWin == oppPlayer.color:
                         self.win(oppPlayer)
-                        print('WINNN')
                 elif self.boardMethods.checkWin(row, col, humanPlayer.color, self.board):
                     self.win(humanPlayer)
-                    print('WINNN')
                 elif self.boardMethods.checkFull(self.board):
                     self.tie()
-                    print("tiee")
                 else:
                     self.nextPlayer()
     
@@ -162,16 +156,12 @@ class gomokuGame():
                 if self.flipMode and flipWin:
                     if flipWin == player.color:
                         self.win(player)
-                        print('WINNN')
                     elif flipWin == oppPlayer.color:
                         self.win(oppPlayer)
-                        print('WINNN')
                 if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
-                    print('WINNN')
                 elif self.boardMethods.checkFull(self.board):
                     self.tie()
-                    print("tiee")
                 else:
                     self.nextPlayer()
     
