@@ -57,7 +57,7 @@ class boardMethods():
         oppBoard = copy.deepcopy(board)
         oppBoard[row][col] = oppColor
         if self.checkWin(row, col, oppColor, oppBoard):
-            score -= 65
+            score -= 50
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece

@@ -28,6 +28,7 @@ class ai(player):
             lineData = line.strip().split(",")
             self.data[lineData[0]] = lineData[1]
         f.close()
+        print(len(self.data))
 
     def updateData(self): #update the data file - write what is in current file onto variable, which is returned, and onto the file, write everthing in self.data
         fAdd = open(f"aiData5.csv", "w")
@@ -48,10 +49,11 @@ class ai(player):
             else:
                 value = self.boardMethods.scoreBoard(row, col, self.color, self.oppColor, board)
                 self.data[convertedBoard] = value
+                print("added")
             return int(value) - (self.abDepth-depth)
         elif isMaxPlayer:
             maxUtil = float("-inf")
-            for move in self.boardMethods.getNearbyMoves(1, board):
+            for move in self.boardMethods.getNearbyMoves(2, board):
                 row = move[0]
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
@@ -64,7 +66,7 @@ class ai(player):
             return maxUtil
         elif not isMaxPlayer:
             minUtil = float("inf")
-            for move in self.boardMethods.getNearbyMoves(1, board):
+            for move in self.boardMethods.getNearbyMoves(2, board):
                 row = move[0]
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
@@ -87,7 +89,7 @@ class ai(player):
         row = None
         col = None
         if self.madeFirstMove:
-            moves = self.boardMethods.getNearbyMoves(1, self.board)
+            moves = self.boardMethods.getNearbyMoves(2, self.board)
             currentBest = float("-inf")
             for move in moves:
                 r = move[0]

@@ -65,13 +65,13 @@ class message():
 class gomokuGame():
 
     def __init__(self, length, player2Exist): # if player2 is True, it will be a 2 player
-        self.cells = 6
+        self.cells = 15
         self.length = length
         self.margin = 20
         self.topMargin = 50
         self.gameOver = False
         self.isPlayerBlack = True
-        self.winRows = 4 # number of rows to win
+        self.winRows = 5 # number of rows to win
         self.isPlayerTurn = bool(random.randrange(0,2))
         
         self.player2Exist = player2Exist
@@ -112,7 +112,7 @@ class gomokuGame():
             if self.isPlayerTurn:
                 self.player.hoveringPiece(x, y)
     def movingPlayer2(self, x, y):
-        if not self.gameOver:
+        if not self.gameOver and self.player2Exist:
             if not self.isPlayerTurn:
                 self.player2.hoveringPiece(x, y)
 
@@ -137,7 +137,7 @@ class gomokuGame():
         if not self.gameOver:
             if not self.isPlayerTurn:
                 move = self.player2.placePiece(x, y) #row, col
-                print(move)
+                print(f"mm{move}")
                 if move == None:
                     self.message.textMessage = "Invalid Placement"
                 else:
@@ -201,13 +201,15 @@ def appStarted(app): #https://www.cs.cmu.edu/~112/notes/notes-animations-part1.h
 #################################################
 
 def mouseMoved(app, event):
-    app.game.moving(event.x, event.y) # turnblack
-    if app.player2:
+    if app.game.isPlayerTurn:
+        app.game.moving(event.x, event.y) # turnblack
+    else: 
         app.game.movingPlayer2(event.x, event.y)
 
 def mousePressed(app, event):
-    app.game.placePlayer(event.x, event.y)
-    if app.player2:
+    if app.game.isPlayerTurn:
+        app.game.placePlayer(event.x, event.y)
+    else:
         app.game.placePlayer2(event.x, event.y)
 
 def keyPressed(app, event):
