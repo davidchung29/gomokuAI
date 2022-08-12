@@ -70,12 +70,9 @@ class gomokuGame():
         self.margin = 20
         self.topMargin = 50
         self.gameOver = False
-        self.isPlayerBlack = bool(random.randrange(0,2))
+        self.isPlayerBlack = True
         self.winRows = 4 # number of rows to win
-        if self.isPlayerBlack:
-            self.isPlayerTurn = True
-        else:
-            self.isPlayerTurn = False
+        self.isPlayerTurn = bool(random.randrange(0,2))
         
         self.player2Exist = player2Exist
 
@@ -87,7 +84,7 @@ class gomokuGame():
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
         self.player = player(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
         self.player2 = player(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
-        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.winRows)
+        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.isPlayerTurn, self.winRows)
         self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack, self.player2Exist)
 
 
@@ -181,9 +178,11 @@ class gomokuGame():
         elif winner.color == 'b':
             color = 'Black'
         self.message.textMessage += f"{color} Wins!!!"
+        self.aibot.updateData()
 
     def tie(self):
-        pass
+        self.mnessage = "Tie - Board is full"
+        self.aibot.updateData()
 def appStarted(app): #https://www.cs.cmu.edu/~112/notes/notes-animations-part1.html
     length = app.width
     app.player2 = False

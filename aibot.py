@@ -8,7 +8,7 @@ from boardMethods import boardMethods
 
 class ai(player):
 
-    def __init__(self, board, length, margin, topMargin, cells, isBlack, winRows):
+    def __init__(self, board, length, margin, topMargin, cells, isBlack, playerTurn, winRows):
         super().__init__(board, length, margin, topMargin, cells, isBlack)
         if self.isBlack:
             self.color = "b"
@@ -17,10 +17,8 @@ class ai(player):
             self.color = "w"
             self.oppColor = 'b'
         self.winRows = winRows
-        self.abDepth = 5
-        self.madeFirstMove = True
-        if self.isBlack:
-            self.madeFirstMove = False
+        self.abDepth = 4
+        self.madeFirstMove = playerTurn
         self.board = board
         self.boardMethods = boardMethods(self.cells, self.winRows)
 
@@ -46,13 +44,11 @@ class ai(player):
             convertedBoard = self.boardMethods.convertBoard(board)
             if self.data and (convertedBoard in self.data):
                 value = self.data[convertedBoard]
-                #print("found")
+                print("found")
             else:
                 value = self.boardMethods.scoreBoard(row, col, self.color, self.oppColor, board)
                 self.data[convertedBoard] = value
-                #print("added")
-                #print(value, depth, value - (self.abDepth-depth)**2)
-            return value - (self.abDepth-depth)
+            return int(value) - (self.abDepth-depth)
         elif isMaxPlayer:
             maxUtil = float("-inf")
             for move in self.boardMethods.getNearbyMoves(1, board):
@@ -82,7 +78,7 @@ class ai(player):
             return minUtil
 
     def randomChoose(self):
-        moves = self.boardMethods.getMoves(self.color, self.board)
+        moves = self.boardMethods.getMoves(self.board)
         move = random.choice(moves)
         row, col = move[0], move[1]
         return row, col
@@ -109,14 +105,11 @@ class ai(player):
             self.madeFirstMove = True
         return row, col
 
-    def placePiece(self, miniMax = False):
+    def placePiece(self, miniMax):
         if miniMax:
             row, col = self.chooseRowCol()
         else:
             row, col = self.randomChoose()
-        self.changeBoard(row, col)
-        return row, col
-    
-    def changeBoard(self, row, col):
+        print(row, col)
         self.board[row][col] = self.color
-        self.updateData()
+        return row, col

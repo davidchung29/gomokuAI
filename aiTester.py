@@ -9,22 +9,19 @@ from boardMethods import boardMethods
 class testAI():
 
     def __init__(self, length):
-        self.cells = 5
+        self.cells = 6
         self.length = length
         self.gameOver = False
-        self.margin = 20
+        self.margin = 30
         self.topMargin = 50
         self.isPlayerBlack = True
-        if self.isPlayerBlack:
-            self.isPlayerTurn = True
-        else:
-            self.isPlayerTurn = False
-        self.winRows = 3
+        self.isPlayerTurn = True
+        self.winRows = 4
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
         self.boardMethods = boardMethods(self.cells, winRows=3)
-        self.playerAIBot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack, self.winRows) # substitute for human player
-        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.winRows)
+        self.playerAIBot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack, self.isPlayerTurn, self.winRows) # substitute for human player
+        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.isPlayerTurn, self.winRows)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
 
 
@@ -71,11 +68,13 @@ class testAI():
         elif winner.color == 'b':
             color = 'Black'
         message += f"{color} Wins!!!"
+        self.aibot.updateData()
 
         return message
     def tie(self):
         self.gameOver = True
         message = "Tie"
+        self.aibot.updateData()
 
 def appStarted(app):
     length = app.width

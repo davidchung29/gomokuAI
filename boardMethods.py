@@ -16,7 +16,7 @@ class boardMethods():
                     result += board[row][col]
         return result
     
-    def getMoves(self, color, board):
+    def getMoves(self, board):
         moves = [] #moves with which row, col, piece was added
         for row in range(self.cells):
             for col in range(self.cells):
@@ -57,7 +57,7 @@ class boardMethods():
         oppBoard = copy.deepcopy(board)
         oppBoard[row][col] = oppColor
         if self.checkWin(row, col, oppColor, oppBoard):
-            score -= 100
+            score -= 65
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece
