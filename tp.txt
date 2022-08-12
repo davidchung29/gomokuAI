@@ -53,4 +53,16 @@ TP2 Update
 
 At the start of the game, the user can choose between 1 player mode and two player mode in the console.
 
+AI only checks nearby tiles for making a move for increased efficiency
+
+Random Player starts first
+
+TP3 Update
+
+Memoization table added
+
+Fixed a few bugs including text for game
+
+
+
 

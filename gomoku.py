@@ -1,8 +1,7 @@
 
 from cgi import test
-from sys import builtin_module_names
 from cmu_112_graphics import *
-import random, string, math, time
+import random
 
 
 #################################################
@@ -65,7 +64,7 @@ class message():
 class gomokuGame():
 
     def __init__(self, length, player2Exist): # if player2 is True, it will be a 2 player
-        self.cells = 15
+        self.cells = 8
         self.length = length
         self.margin = 20
         self.topMargin = 50
@@ -215,6 +214,8 @@ def mousePressed(app, event):
 def keyPressed(app, event):
     if event.key == "r":
         appStarted(app)
+    elif event.key == "s":
+        app.game.aibot.updateData()
     elif event.key == "Up":
         app.game.resizeBoard(True)
     elif event.key == "Down":

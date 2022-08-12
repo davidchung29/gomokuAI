@@ -17,7 +17,7 @@ class ai(player):
             self.color = "w"
             self.oppColor = 'b'
         self.winRows = winRows
-        self.abDepth = 4
+        self.abDepth = 5
         self.madeFirstMove = playerTurn
         self.board = board
         self.boardMethods = boardMethods(self.cells, self.winRows)

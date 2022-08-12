@@ -39,11 +39,9 @@ class player():
         if self.isValidPiece(row, col):
             self.prevVisited = [row, col]
             self.changeBoard(row, col)
-        print(self.prevVisited, row, col)
 
     def placePiece(self, x, y):
         row, col = self.getCoords(x, y)
-        print(self.prevVisited)
         if [row, col] == self.prevVisited:
             self.prevVisited = []
             self.changeBoard(row, col)
