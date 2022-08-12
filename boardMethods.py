@@ -57,11 +57,19 @@ class boardMethods():
         oppBoard = copy.deepcopy(board)
         oppBoard[row][col] = oppColor
         if self.checkWin(row, col, oppColor, oppBoard):
-            score -= 50
+            score -= 60
         return score
 
     def checkWin(self, row, col, color, board): #row and col are for last placed piece
         return self.getSurr(row, col, color, board, self.winRows)
+    
+    def checkWinAll(self, board, color, oppColor):
+        for row in range(len(board)):
+            for col in range(len(board[0])):
+                if self.checkWin(row, col, color, board):
+                    return color
+                elif self.checkWin(row, col, oppColor, board):
+                    return oppColor
     
     def checkFull(self, board):
         for row in board:
@@ -111,3 +119,13 @@ class boardMethods():
                 count = 0
             if count == rowCount:
                 return True 
+
+    def flipCoords(self, col, board):
+        tempBoard = copy.deepcopy(board)
+        tempCol = []
+        for r in range(len(tempBoard)):
+            tempCol.append(tempBoard[r][col])
+        flippedCol = tempCol[::-1]
+        for r2 in range(len(tempBoard)):
+            tempBoard[r2][col] = flippedCol[r2]
+        return tempBoard

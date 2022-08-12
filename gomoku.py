@@ -51,7 +51,7 @@ class message():
             if self.player2Exist:
                 self.textMessage = "Player 2:"
             else:
-                self.textMessage = "AI:"
+                self.textMessage = "AI Bot:"
             if self.isPlayerBlack:
                 self.textMessage += " White"
             else:
@@ -63,27 +63,28 @@ class message():
 
 class gomokuGame():
 
-    def __init__(self, length, player2Exist): # if player2 is True, it will be a 2 player
-        self.cells = 8
+    def __init__(self, length, player2Exist, flipMode): # if player2 is True, it will be a 2 player
+        self.cells = 6
         self.length = length
-        self.margin = 20
+        self.margin = 40
         self.topMargin = 50
         self.gameOver = False
         self.isPlayerBlack = True
-        self.winRows = 5 # number of rows to win
+        self.winRows = 4 # number of rows to win
         self.isPlayerTurn = bool(random.randrange(0,2))
         
         self.player2Exist = player2Exist
+        self.flipMode = flipMode
 
         self.board = [[""] * self.cells for _ in range(self.cells)]
         self.initializeClasses()
 
-    def initializeClasses(self):
+    def initializeClasses(self): # needed when you resize a board, to update certain values
         self.boardMethods = boardMethods(self.cells, self.winRows)
         self.grid = gridBoard(self.board, self.length, self.margin, self.topMargin, self.cells)
         self.player = player(self.board, self.length, self.margin, self.topMargin, self.cells, self.isPlayerBlack)
         self.player2 = player(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack)
-        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.isPlayerTurn, self.winRows)
+        self.aibot = ai(self.board, self.length, self.margin, self.topMargin, self.cells, not self.isPlayerBlack, self.isPlayerTurn, self.winRows, self.flipMode)
         self.message = message(self.length, self.topMargin, self.isPlayerTurn, self.isPlayerBlack, self.player2Exist)
 
 
@@ -106,55 +107,65 @@ class gomokuGame():
         self.isPlayerTurn = not self.isPlayerTurn
         self.message.updateMessageTurn(self.isPlayerTurn)
 
-    def moving(self, x, y):
+    def moving(self, x, y, humanPlayer):
         if not self.gameOver:
-            if self.isPlayerTurn:
-                self.player.hoveringPiece(x, y)
-    def movingPlayer2(self, x, y):
-        if not self.gameOver and self.player2Exist:
-            if not self.isPlayerTurn:
-                self.player2.hoveringPiece(x, y)
+            humanPlayer.hoveringPiece(x, y)
 
-    def placePlayer(self, x, y):
+    def placePlayer(self, x, y, humanPlayer):
         if not self.gameOver:
-            if self.isPlayerTurn:
-                move = self.player.placePiece(x, y) #row, col
-                if move == None:
-                    self.message.textMessage = "Invalid Placement"
-                else:
-                    row, col = move[0], move[1]
-                    if self.boardMethods.checkWin(row, col, self.player.color, self.board):
-                        self.win(self.player)
+            if humanPlayer == self.player:
+                oppPlayer = self.player2 if self.player2Exist else self.aibot
+            else:
+                oppPlayer = self.player
+            move = humanPlayer.placePiece(x, y) #row, col
+            if move == None:
+                self.message.textMessage = "Invalid Placement"
+            else:
+                row, col = move[0], move[1]
+                flipWin = None
+                if self.flipMode:
+                    resBoard = self.boardMethods.flipCoords(col, self.board)
+                    for r in range(len(self.board)):
+                        for c in range(len(self.board[r])):
+                            self.board[r][c] = resBoard[r][c]
+                    flipWin = self.boardMethods.checkWinAll(self.board, humanPlayer.color, oppPlayer.color)
+                if self.flipMode and flipWin:
+                    if flipWin == humanPlayer.color:
+                        self.win(humanPlayer)
                         print('WINNN')
-                    elif self.boardMethods.checkFull(self.board):
-                        self.tie()
-                        print("tiee")
-                    else:
-                        self.nextPlayer()
+                    elif flipWin == oppPlayer.color:
+                        self.win(oppPlayer)
+                        print('WINNN')
+                elif self.boardMethods.checkWin(row, col, humanPlayer.color, self.board):
+                    self.win(humanPlayer)
+                    print('WINNN')
+                elif self.boardMethods.checkFull(self.board):
+                    self.tie()
+                    print("tiee")
+                else:
+                    self.nextPlayer()
     
-    def placePlayer2(self, x, y):
-        if not self.gameOver:
-            if not self.isPlayerTurn:
-                move = self.player2.placePiece(x, y) #row, col
-                print(f"mm{move}")
-                if move == None:
-                    self.message.textMessage = "Invalid Placement"
-                else:
-                    row, col = move[0], move[1]
-                    if self.boardMethods.checkWin(row, col, self.player2.color, self.board):
-                        self.win(self.player2)
-                        print('WINNN')
-                    elif self.boardMethods.checkFull(self.board):
-                        self.tie()
-                        print("tiee")
-                    else:
-                        self.nextPlayer()
     
 
     def placeAI(self):
         if not self.gameOver:
+            player = self.aibot
+            oppPlayer = self.player
             if not self.isPlayerTurn:
                 row, col = self.aibot.placePiece(True)
+                if self.flipMode:
+                    resBoard = self.boardMethods.flipCoords(col, self.board)
+                    for r in range(len(self.board)):
+                        for c in range(len(self.board[r])):
+                            self.board[r][c] = resBoard[r][c]
+                    flipWin = self.boardMethods.checkWinAll(self.board, player.color, oppPlayer.color)
+                if self.flipMode and flipWin:
+                    if flipWin == player.color:
+                        self.win(player)
+                        print('WINNN')
+                    elif flipWin == oppPlayer.color:
+                        self.win(oppPlayer)
+                        print('WINNN')
                 if self.boardMethods.checkWin(row, col, self.aibot.color, self.board):
                     self.win(self.aibot)
                     print('WINNN')
@@ -171,7 +182,7 @@ class gomokuGame():
         elif winner == self.aibot:
             self.message.textMessage = "AI "
         elif winner == self.player2:
-            self.message.textMessage = "Player 2"
+            self.message.textMessage = "Player 2 "
         if winner.color == 'w':
             color = 'White'
         elif winner.color == 'b':
@@ -185,14 +196,24 @@ class gomokuGame():
 def appStarted(app): #https://www.cs.cmu.edu/~112/notes/notes-animations-part1.html
     length = app.width
     app.player2 = False
-    gameMode = input("type 1 for 1 player, 2 for 2 player: ")
-    if gameMode == "2":
-        app.player2 = True
-    elif gameMode == "1":
-        app.player2 = False
-    else:
-        gameMode = input("type 1 for 1 player, 2 for 2 player: ")
-    app.game = gomokuGame(length, app.player2)
+    app.flip = False
+    while True:
+        gameMode = input("Type 1 for 1 player, 2 for 2 player: ")
+        if gameMode == "2":
+            app.player2 = True
+            break
+        elif gameMode == "1":
+            app.player2 = False
+            break
+    while True:
+        flipBoard = input("Play with flip? (the horizontal line for the placed piece will flip) type y/n: ")
+        if flipBoard == 'y':
+            app.flip = True
+            break
+        elif flipBoard == 'n':
+            app.flip = False
+            break
+    app.game = gomokuGame(length, app.player2, app.flip)
     app.timerDelay = 1000
 
 #################################################
@@ -201,15 +222,15 @@ def appStarted(app): #https://www.cs.cmu.edu/~112/notes/notes-animations-part1.h
 
 def mouseMoved(app, event):
     if app.game.isPlayerTurn:
-        app.game.moving(event.x, event.y) # turnblack
-    else: 
-        app.game.movingPlayer2(event.x, event.y)
+        app.game.moving(event.x, event.y, app.game.player) # turnblack
+    elif app.player2:
+        app.game.moving(event.x, event.y, app.game.player2)
 
 def mousePressed(app, event):
     if app.game.isPlayerTurn:
-        app.game.placePlayer(event.x, event.y)
-    else:
-        app.game.placePlayer2(event.x, event.y)
+        app.game.placePlayer(event.x, event.y, app.game.player)
+    elif app.player2:
+        app.game.placePlayer(event.x, event.y, app.game.player2)
 
 def keyPressed(app, event):
     if event.key == "r":

@@ -1,6 +1,5 @@
 import random
 import copy
-import os
 
 from human_player import player
 from boardMethods import boardMethods
@@ -8,7 +7,7 @@ from boardMethods import boardMethods
 
 class ai(player):
 
-    def __init__(self, board, length, margin, topMargin, cells, isBlack, playerTurn, winRows):
+    def __init__(self, board, length, margin, topMargin, cells, isBlack, playerTurn, winRows, flipMode):
         super().__init__(board, length, margin, topMargin, cells, isBlack)
         if self.isBlack:
             self.color = "b"
@@ -17,18 +16,14 @@ class ai(player):
             self.color = "w"
             self.oppColor = 'b'
         self.winRows = winRows
-        self.abDepth = 5
+        self.abDepth = 3
         self.madeFirstMove = playerTurn
         self.board = board
         self.boardMethods = boardMethods(self.cells, self.winRows)
+        self.flipMode = flipMode
 
         self.data = dict()
         f = open(f"aiData5.csv")
-        for line in f:
-            lineData = line.strip().split(",")
-            self.data[lineData[0]] = lineData[1]
-        f.close()
-        print(len(self.data))
 
     def updateData(self): #update the data file - write what is in current file onto variable, which is returned, and onto the file, write everthing in self.data
         fAdd = open(f"aiData5.csv", "w")
@@ -45,11 +40,9 @@ class ai(player):
             convertedBoard = self.boardMethods.convertBoard(board)
             if self.data and (convertedBoard in self.data):
                 value = self.data[convertedBoard]
-                print("found")
             else:
                 value = self.boardMethods.scoreBoard(row, col, self.color, self.oppColor, board)
                 self.data[convertedBoard] = value
-                print("added")
             return int(value) - (self.abDepth-depth)
         elif isMaxPlayer:
             maxUtil = float("-inf")
@@ -58,6 +51,11 @@ class ai(player):
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
                 tempBoard[row][col] = self.color
+                if self.flipMode: # flip the board if the user chose flip board
+                    resBoard = self.boardMethods.flipCoords(col, tempBoard)
+                    for r in range(len(tempBoard)):
+                        for c in range(len(tempBoard[r])):
+                            tempBoard[r][c] = resBoard[r][c]
                 value = self.miniMax(row, col, tempBoard, False, depth - 1, alpha, beta) # evaluate this node
                 maxUtil = max(maxUtil, value) # return the max value
                 alpha = max(alpha, value)
@@ -71,6 +69,11 @@ class ai(player):
                 col = move[1]
                 tempBoard = copy.deepcopy(board)
                 tempBoard[row][col] = self.oppColor
+                if self.flipMode: # flip the board if the user chose flip board
+                    resBoard = self.boardMethods.flipCoords(col, tempBoard)
+                    for r in range(len(tempBoard)):
+                        for c in range(len(tempBoard[r])):
+                            tempBoard[r][c] = resBoard[r][c]
                 value = self.miniMax(row, col, tempBoard, True, depth - 1, alpha, beta) # evaluate this node
                 # print(f"min{depth, minUtil, value}")
                 minUtil = min(minUtil, value) # return the min value
@@ -115,3 +118,4 @@ class ai(player):
         print(row, col)
         self.board[row][col] = self.color
         return row, col
+    
