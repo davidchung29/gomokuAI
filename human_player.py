@@ -46,7 +46,7 @@ class player():
             self.prevVisited = []
             self.changeBoard(row, col)
             return [row, col]
-        return row, col
+        return None
 
     def isValidPiece(self, row, col):
         if row < self.cells and col < self.cells:
