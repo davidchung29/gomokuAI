@@ -1,0 +1,68 @@
+PROJECT PLAN TP1
+
+Name: Gomoku AI
+
+Project Description
+
+
+This project is an AI player for gomoku(5-in a row). The AI player will use Alpha-beta pruning in order to find the most optimal move to make. If there is time, it will be able to also use reinforcement learning. Additional features to the Gomoku game may be added.
+
+gomoku.py - run this file to play against the AI player
+aiTester.py - run this file to have to AI players play against each other 
+
+
+Structural Plan
+
+gomoky.py 
+
+This file contains the class gomokuGame which initializes the player, aibot, gridBoard, and message classes. The gomokuGame class will also manage, updating the board, deciding which player's turn it is, managing what to call and do when a player makes a move, such as changing the message or checking if the player has won. It will also have the function that is responsible for deciding what to do when a player has won. 
+
+This file will also contain functions for control, which would include mouseMoved, mousePressed, keyPressed, and timerFired. It also has functions for the view, which would include the redrawAll function. It will also create the app when it is run and call gomokuGame.
+
+aiTester.py 
+
+This file contains the class testAI which will run two AI players against each other and will used timerFired to tell the AI to make a move, and will use keyPressed to restart or pause the app for observing how the AI players play. It will also use the recrawAll function to create an animation of the two AI players playing against each other. 
+
+
+human_player.py
+
+This file contains the class player, which is responsible for updating the board when a player is moving there mouse cursor when looking for a place to place down there piece, and when a user decices to place their piece by clicking on a certain point on the grid. 
+
+aibot.py 
+
+This file contains the class ai which is a child class of player. It basically makes a choice for putting its piece in chooseRowCol, then places it onto the board using placePiece. 
+
+grid_board.py
+
+This file contains the class gridBoard, which is used for generating the game board, updating the board, checking if a player has won, and drawing the game
+
+
+Algorithmic Plan
+
+This project will used an optimized Alpha-Beta pruning algorithm in order to find the best move to make in gomoku.
+
+In order to check how many pieces a player has made in a row, or to check if a player has won, the row and col values of the last placed piece will be stored, and the diagonols, horizontal, and vertical rows will be checked to see how many pieces a player has in a row.
+
+
+Version Control
+
+Github will be used to backup the code. The repository will be https://github.com/davidchung29/gomokuAI in branch master
+
+
+TP2 Update
+
+At the start of the game, the user can choose between 1 player mode and two player mode in the console.
+
+AI only checks nearby tiles for making a move for increased efficiency
+
+Random Player starts first
+
+TP3 Update
+
+Memoization table added
+
+Fixed a few bugs including text for game
+
+
+
+
